@@ -1,0 +1,45 @@
+{
+  "name": "@defi-cat/payment-gateway-sdk",
+  "version": "0.1.0",
+  "description": "Official Node.js SDK for the defi-cat crypto payment gateway — create USDT invoices (Polygon/BSC/TRON), verify webhooks, and build checkout flows.",
+  "type": "module",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "lib"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.js"
+  },
+  "keywords": [
+    "crypto",
+    "payments",
+    "payment-gateway",
+    "usdt",
+    "polygon",
+    "bsc",
+    "tron",
+    "webhooks"
+  ],
+  "repository": "github:defi-cat/payment-gateway-sdk",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.10"
+  }
+}

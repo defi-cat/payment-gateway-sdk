@@ -1,0 +1,12 @@
+{
+  "name": "express-store-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@defi-cat/payment-gateway-sdk": "file:../..",
+    "express": "^4.19.0"
+  }
+}
