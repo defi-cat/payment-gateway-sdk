@@ -1,10 +1,10 @@
 # @defi-cat/payment-gateway-sdk
 
 Official Node.js SDK for the defi-cat crypto payment gateway. Create USDT
-invoices on **Polygon, BSC, or TRON**, redirect customers to the hosted
-checkout, and verify payment webhooks — with the sharp edges (raw-body
-signature verification, timing-safe compare, idempotent retries) handled
-for you.
+invoices on **Ethereum, Polygon, BSC, or TRON** — or native **Bitcoin**
+invoices — redirect customers to the hosted checkout, and verify payment
+webhooks — with the sharp edges (raw-body signature verification,
+timing-safe compare, idempotent retries) handled for you.
 
 - **Zero runtime dependencies** — uses native `fetch` (Node ≥ 18)
 - ESM package with full editor IntelliSense (JSDoc + bundled `index.d.ts`)
@@ -35,7 +35,7 @@ const gw = new PaymentGateway({
 
 const invoice = await gw.createInvoice({
   amount: 25,                 // USDT — or fiat_amount + fiat_currency
-  chain: "POLYGON",           // POLYGON | BSC | TRON
+  chain: "POLYGON",           // ETHEREUM | POLYGON | BSC | TRON | BITCOIN
   order_id: "order-1042",     // your reconciliation ID, echoed everywhere
   success_url: "https://yourstore.com/thanks",
   cancel_url: "https://yourstore.com/cart",
@@ -142,11 +142,21 @@ runnable store using this flow.
 
 ### Methods
 
-- **`createInvoice(params)`** → `Invoice`. Provide `amount` (USDT) **or**
-  `fiat_amount` + `fiat_currency` (`USD EUR GBP INR AUD CAD JPY` — quoted to
-  USDT once at creation). Other params: `chain` (required),
+- **`createInvoice(params)`** → `Invoice`. Provide `amount` (in `currency`,
+  default `USDT`) **or** `fiat_amount` + `fiat_currency`
+  (`USD EUR GBP INR AUD CAD JPY` — quoted to USDT once at creation). Other
+  params: `chain` (required — `ETHEREUM | POLYGON | BSC | TRON | BITCOIN`),
   `expires_in_minutes` (1–1440, default 15), `order_id`, `customer_email`,
   `success_url`, `cancel_url`.
+
+  There is no USDT on Bitcoin — for a native BTC invoice, pass
+  `chain: "BITCOIN"` with `currency: "BTC"` and `amount` in BTC directly:
+  ```js
+  await gw.createInvoice({ amount: 0.0005, currency: "BTC", chain: "BITCOIN" });
+  ```
+  (The USDT→BTC re-quote you may see on the hosted checkout only applies
+  when a merchant omits `chain` entirely and lets the customer pick the
+  network there — a flow this SDK doesn't expose a method for yet.)
 - **`getInvoice(invoiceId)`** → `Invoice` with current `status`
   (`created | pending | confirming | paid | expired | failed`) and
   `paid_amount`. No auth required by the API.

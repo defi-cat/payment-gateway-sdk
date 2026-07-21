@@ -1,7 +1,7 @@
 {
   "name": "@defi-cat/payment-gateway-sdk",
   "version": "0.1.0",
-  "description": "Official Node.js SDK for the defi-cat crypto payment gateway — create USDT invoices (Polygon/BSC/TRON), verify webhooks, and build checkout flows.",
+  "description": "Official Node.js SDK for the defi-cat crypto payment gateway — create USDT invoices (Ethereum/Polygon/BSC/TRON) or native Bitcoin invoices, verify webhooks, and build checkout flows.",
   "type": "module",
   "main": "index.js",
   "types": "index.d.ts",
@@ -29,6 +29,8 @@
     "payments",
     "payment-gateway",
     "usdt",
+    "bitcoin",
+    "ethereum",
     "polygon",
     "bsc",
     "tron",

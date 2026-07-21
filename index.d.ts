@@ -1,19 +1,22 @@
 /// <reference types="node" />
 
-export type Chain = "POLYGON" | "BSC" | "TRON";
+export type Chain = "ETHEREUM" | "POLYGON" | "BSC" | "TRON" | "BITCOIN";
 export type InvoiceStatus = "created" | "pending" | "confirming" | "paid" | "expired" | "failed";
 export type FiatCurrency = "USD" | "EUR" | "GBP" | "INR" | "AUD" | "CAD" | "JPY";
 
 export interface CreateInvoiceParams {
-  /** USDT amount — provide this OR fiat_amount, not both. */
+  /** Amount in `currency` — provide this OR fiat_amount, not both. */
   amount?: number;
   /** Fiat amount, converted to USDT once at creation. */
   fiat_amount?: number;
   /** Required when fiat_amount is set. */
   fiat_currency?: FiatCurrency;
   chain: Chain;
-  /** Defaults to "USDT" (the only supported value). */
-  currency?: "USDT";
+  /**
+   * Defaults to "USDT". Use "BTC" only with `chain: "BITCOIN"` — there is
+   * no USDT on Bitcoin, so a BITCOIN invoice is priced directly in BTC.
+   */
+  currency?: "USDT" | "BTC";
   /** 1–1440, default 15. */
   expires_in_minutes?: number;
   /** Your own reconciliation ID (≤255 chars). */
