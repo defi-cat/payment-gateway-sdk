@@ -63,9 +63,22 @@ a `whsec_...` secret once. Two events exist today:
 |---|---|---|
 | `invoice.paid` | payment confirmed on-chain (or simulated in test mode) | `paid_amount`, `fee_amount`, `net_amount`, `paid_at`, `order_id` |
 | `invoice.expired` | the expiry window passed without full payment | `expired_at`, `order_id` |
+| `invoice.created` | an invoice was issued — including by a payment link, which your server never asked for | `expires_at`, `address`, `order_id` |
+| `invoice.confirming` | the full amount is on-chain but not yet final | `received_amount` |
+| `invoice.underpaid` | money arrived, but less than required | `received_amount`, `required_amount`, `shortfall` |
+
+> **Only `invoice.paid` means fulfil.** `confirming` and `underpaid` are
+> customer-communication signals — acting on them ships goods for money
+> that hasn't (or won't) fully arrive.
+
+The last three fire **at most once per invoice**, so you can treat them as
+state transitions rather than polling results.
 
 Failed deliveries are retried with backoff (1m → 5m → 30m → 2h → 12h), so
 **your handler must be idempotent** — `invoice_id` is a safe dedupe key.
+Every attempt, including failures, is visible in the dashboard's
+**Webhooks → Delivery log**, where you can inspect the exact payload we
+sent and resend it.
 
 ### Express
 

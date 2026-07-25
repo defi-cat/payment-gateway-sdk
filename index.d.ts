@@ -89,7 +89,40 @@ export interface InvoiceExpiredEvent {
   is_test: boolean;
 }
 
-export type WebhookEvent = InvoicePaidEvent | InvoiceExpiredEvent;
+/**
+ * Lifecycle events. Each fires at most once per invoice, so they can be
+ * treated as state transitions. None of them is a signal to fulfil an
+ * order — only `invoice.paid` is.
+ */
+export interface InvoiceLifecycleEvent {
+  event: "invoice.created" | "invoice.confirming" | "invoice.underpaid";
+  invoice_id: string;
+  amount: number | string;
+  currency: string;
+  /** Set only on re-quoted invoices (USDT-priced, paid in BTC). */
+  pay_amount: number | string | null;
+  pay_currency: string | null;
+  chain: Chain | null;
+  status: InvoiceStatus;
+  order_id: string | null;
+  customer_email: string | null;
+  is_test: boolean;
+  /** invoice.created only. */
+  expires_at?: string;
+  /** invoice.created only — null until the customer picks a network. */
+  address?: string | null;
+  /** invoice.confirming and invoice.underpaid. */
+  received_amount?: number;
+  /** invoice.underpaid only. */
+  required_amount?: number;
+  /** invoice.underpaid only — required_amount minus received_amount. */
+  shortfall?: number;
+}
+
+export type WebhookEvent =
+  | InvoicePaidEvent
+  | InvoiceExpiredEvent
+  | InvoiceLifecycleEvent;
 
 export interface PaymentGatewayConfig {
   apiKey: string;
