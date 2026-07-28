@@ -66,6 +66,7 @@ a `whsec_...` secret once. Two events exist today:
 | `invoice.created` | an invoice was issued — including by a payment link, which your server never asked for | `expires_at`, `address`, `order_id` |
 | `invoice.confirming` | the full amount is on-chain but not yet final | `received_amount` |
 | `invoice.underpaid` | money arrived, but less than required | `received_amount`, `required_amount`, `shortfall` |
+| `invoice.refunded` | the merchant recorded a refund sent from their own wallet | `refunded_amount`, `refund_address`, `refund_tx_hash` |
 
 > **Only `invoice.paid` means fulfil.** `confirming` and `underpaid` are
 > customer-communication signals — acting on them ships goods for money

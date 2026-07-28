@@ -95,7 +95,11 @@ export interface InvoiceExpiredEvent {
  * order — only `invoice.paid` is.
  */
 export interface InvoiceLifecycleEvent {
-  event: "invoice.created" | "invoice.confirming" | "invoice.underpaid";
+  event:
+    | "invoice.created"
+    | "invoice.confirming"
+    | "invoice.underpaid"
+    | "invoice.refunded";
   invoice_id: string;
   amount: number | string;
   currency: string;
@@ -117,6 +121,15 @@ export interface InvoiceLifecycleEvent {
   required_amount?: number;
   /** invoice.underpaid only — required_amount minus received_amount. */
   shortfall?: number;
+  /**
+   * invoice.refunded only. The platform is non-custodial — a refund is
+   * the merchant's own send, recorded; tx hash may be null if recorded
+   * before sending.
+   */
+  refunded_amount?: number;
+  refund_address?: string;
+  refund_tx_hash?: string | null;
+  refunded_at?: string;
 }
 
 export type WebhookEvent =
