@@ -11,7 +11,19 @@ export interface CreateInvoiceParams {
   fiat_amount?: number;
   /** Required when fiat_amount is set. */
   fiat_currency?: FiatCurrency;
-  chain: Chain;
+  /**
+   * Optional. Omit it and the customer chooses at checkout — a network, or
+   * card/UPI where your gateway offers them. Naming a chain makes the
+   * invoice crypto-only, on that network.
+   */
+  chain?: Chain;
+  /**
+   * Restrict this invoice to some of your gateway's payment methods, e.g.
+   * ["card", "upi"] or ["crypto"]. Omit to offer them all. Methods not
+   * available for the invoice are dropped (see Invoice.payment_methods);
+   * if none is available the request is refused.
+   */
+  payment_methods?: PaymentMethod[];
   /**
    * Defaults to "USDT". Use "BTC" only with `chain: "BITCOIN"` — there is
    * no USDT on Bitcoin, so a BITCOIN invoice is priced directly in BTC.
@@ -43,7 +55,11 @@ export interface Invoice {
   fiat_amount: number | string | null;
   fiat_currency: string | null;
   is_test: boolean;
+  /** What this invoice accepts; null = everything the gateway offers. */
+  payment_methods?: PaymentMethod[] | null;
 }
+
+export type PaymentMethod = "crypto" | "card" | "upi";
 
 export interface InvoiceCheckResult {
   invoice_id: string;

@@ -159,9 +159,23 @@ runnable store using this flow.
 - **`createInvoice(params)`** → `Invoice`. Provide `amount` (in `currency`,
   default `USDT`) **or** `fiat_amount` + `fiat_currency`
   (`USD EUR GBP INR AUD CAD JPY` — quoted to USDT once at creation). Other
-  params: `chain` (required — `ETHEREUM | POLYGON | BSC | TRON | BITCOIN`),
+  params: `chain` (`ETHEREUM | POLYGON | BSC | TRON | BITCOIN` — omit it and
+  the customer chooses at checkout), `payment_methods` (see below),
   `expires_in_minutes` (1–1440, default 15), `order_id`, `customer_email`,
   `success_url`, `cancel_url`.
+
+  **Choosing the payment method per invoice.** Where your gateway offers
+  both crypto and card/UPI, `payment_methods` restricts one invoice to some
+  of them:
+  ```js
+  await gw.createInvoice({ amount: 50, payment_methods: ["card", "upi"] }); // no crypto shown
+  await gw.createInvoice({ amount: 50, payment_methods: ["crypto"] });      // no card shown
+  ```
+  Omit it to offer everything. A method that is not available for the
+  invoice (say UPI is off, or the amount is above the card limit) is
+  dropped, and the returned invoice's `payment_methods` says what was kept;
+  if none is available the call is refused. `chain` can only be combined
+  with a list that includes `"crypto"`.
 
   There is no USDT on Bitcoin — for a native BTC invoice, pass
   `chain: "BITCOIN"` with `currency: "BTC"` and `amount` in BTC directly:
@@ -169,8 +183,7 @@ runnable store using this flow.
   await gw.createInvoice({ amount: 0.0005, currency: "BTC", chain: "BITCOIN" });
   ```
   (The USDT→BTC re-quote you may see on the hosted checkout only applies
-  when a merchant omits `chain` entirely and lets the customer pick the
-  network there — a flow this SDK doesn't expose a method for yet.)
+  when `chain` is omitted and the customer picks Bitcoin there.)
 - **`getInvoice(invoiceId)`** → `Invoice` with current `status`
   (`created | pending | confirming | paid | expired | failed`) and
   `paid_amount`. No auth required by the API.

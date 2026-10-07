@@ -74,9 +74,33 @@ describe("createInvoice", () => {
     ).rejects.toThrow(TypeError);
   });
 
-  it("requires chain synchronously", async () => {
+  it("lets the customer choose when no chain is given", async () => {
+    const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ invoice_id: "i" }), { status: 201 }));
+    const gw = makeGateway(fetchImpl);
+    await gw.createInvoice({ amount: 1 });
+    const body = JSON.parse(fetchImpl.mock.calls[0][1].body);
+    expect(body.chain).toBeUndefined();
+  });
+
+  it("sends payment_methods through", async () => {
+    const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ invoice_id: "i" }), { status: 201 }));
+    const gw = makeGateway(fetchImpl);
+    await gw.createInvoice({ amount: 1, payment_methods: ["card", "upi"] });
+    expect(JSON.parse(fetchImpl.mock.calls[0][1].body).payment_methods).toEqual(["card", "upi"]);
+  });
+
+  it("refuses a malformed payment_methods synchronously", async () => {
     const gw = makeGateway(vi.fn());
-    await expect(() => gw.createInvoice({ amount: 1 })).rejects.toThrow(TypeError);
+    for (const bad of [[], ["paypal"], "card", [null]]) {
+      await expect(() => gw.createInvoice({ amount: 1, payment_methods: bad })).rejects.toThrow(TypeError);
+    }
+  });
+
+  it("refuses a chain on an invoice that excludes crypto", async () => {
+    const gw = makeGateway(vi.fn());
+    await expect(() =>
+      gw.createInvoice({ amount: 1, chain: "BSC", payment_methods: ["card"] })
+    ).rejects.toThrow(/must include "crypto"/);
   });
 });
 
