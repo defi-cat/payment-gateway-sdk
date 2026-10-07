@@ -162,7 +162,26 @@ runnable store using this flow.
   params: `chain` (`ETHEREUM | POLYGON | BSC | TRON | BITCOIN` — omit it and
   the customer chooses at checkout), `payment_methods` (see below),
   `expires_in_minutes` (1–1440, default 15), `order_id`, `customer_email`,
-  `success_url`, `cancel_url`.
+  `customer_name`, `customer_phone`, `customer_address`, `success_url`,
+  `cancel_url`.
+
+  **Filling in the payer's details.** For card and UPI, what you already
+  know about the payer opens the payment form filled in; they can still
+  correct it. With `customer_email` set, a card payer is not asked for an
+  email at all.
+  ```js
+  await gw.createInvoice({
+    fiat_amount: 500,
+    fiat_currency: "INR",
+    payment_methods: ["upi"],
+    customer_email: "asha@example.com",
+    customer_name: "Asha Rao",
+    customer_phone: "+919876543210",
+    customer_address: { line1: "12 MG Road", city: "Pune", state: "MH", postal_code: "411001", country: "IN" },
+  });
+  ```
+  These are shown to whoever opens the checkout link, so send only what
+  the payer would see on their own form.
 
   **Choosing the payment method per invoice.** Where your gateway offers
   both crypto and card/UPI, `payment_methods` restricts one invoice to some

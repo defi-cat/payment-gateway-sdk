@@ -33,11 +33,28 @@ export interface CreateInvoiceParams {
   expires_in_minutes?: number;
   /** Your own reconciliation ID (≤255 chars). */
   order_id?: string;
+  /** With this set, a card payer is not asked for an email at checkout. */
   customer_email?: string;
+  /** Fills in the card / UPI form. */
+  customer_name?: string;
+  /** Fills in the card / UPI form, e.g. "+919876543210". */
+  customer_phone?: string;
+  /** Fills in the card / UPI form. Every field optional. */
+  customer_address?: CustomerAddress;
   /** Checkout redirects here on payment, with invoice_id/status/order_id appended. */
   success_url?: string;
   /** Linked from checkout on expiry/failure, same params appended. */
   cancel_url?: string;
+}
+
+export interface CustomerAddress {
+  line1?: string;
+  line2?: string;
+  city?: string;
+  state?: string;
+  postal_code?: string;
+  /** Two-letter country code, e.g. "IN". */
+  country?: string;
 }
 
 export interface Invoice {
