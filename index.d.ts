@@ -97,6 +97,7 @@ export interface SimulatePaymentResult {
 
 export interface InvoicePaidEvent {
   event: "invoice.paid";
+  status: "paid";
   invoice_id: string;
   amount: number | string;
   paid_amount: string;
@@ -108,10 +109,21 @@ export interface InvoicePaidEvent {
   order_id: string | null;
   customer_email: string | null;
   is_test?: boolean;
+  /** Card / UPI only. Absent on crypto payments. */
+  payment_method?: "card" | "upi";
+  /** Card / UPI: what the customer was charged, e.g. "500.00". */
+  charged_amount?: string;
+  /** Card / UPI: "INR" for UPI, "USD" for cards. */
+  charged_currency?: string;
+  /** Card / UPI: the payment reference the customer also sees, e.g. "UPI-CD2A98865C6B". */
+  transaction_id?: string;
+  /** Card / UPI: the bank UTR is not available — always null. */
+  utr?: null;
 }
 
 export interface InvoiceExpiredEvent {
   event: "invoice.expired";
+  status: "expired";
   invoice_id: string;
   amount: number | string;
   currency: string;
